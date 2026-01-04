@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -12,10 +13,25 @@
     }
   </script>
   <style>
-    .theme-transition { transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+    .theme-transition {
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    /* Hide scrollbars when installed as PWA */
+    @media (display-mode: standalone) {
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      * {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    }
   </style>
   <meta name="color-scheme" content="light dark" />
 </head>
+
 <body class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 theme-transition">
   <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
@@ -25,7 +41,8 @@
         <div class="flex flex-col gap-2">
           <h1 class="text-2xl font-semibold tracking-tight">Nemours Compensation & Effective Hourly Calculator v2</h1>
           <p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl">
-            Computes total compensation and effective hourly rate using base salary, the core 7-on/14-off schedule, and two optional paid shift types.
+            Computes total compensation and effective hourly rate using base salary, the core 7-on/14-off schedule, and
+            two optional paid shift types.
           </p>
         </div>
 
@@ -34,7 +51,9 @@
           class="self-start rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700 active:scale-[0.98] theme-transition flex items-center gap-2"
           aria-label="Toggle dark mode">
           <svg id="iconLight" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+            <path fill-rule="evenodd"
+              d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+              clip-rule="evenodd" />
           </svg>
           <svg id="iconDark" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20">
             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
@@ -50,14 +69,17 @@
       <div class="lg:col-span-2 space-y-6">
 
         <!-- Step 1: Core assumptions card -->
-        <section class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
+        <section
+          class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
           <div class="flex items-start justify-between gap-3 mb-4">
             <div>
               <div class="flex items-center gap-2">
-                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">1</span>
+                <span
+                  class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">1</span>
                 <h2 class="text-base font-semibold">Core assumptions</h2>
               </div>
-              <p class="mt-1 ml-8 text-xs text-neutral-500 dark:text-neutral-400">Edit once, then lock to avoid accidental changes.</p>
+              <p class="mt-1 ml-8 text-xs text-neutral-500 dark:text-neutral-400">Edit once, then lock to avoid
+                accidental changes.</p>
             </div>
 
             <div class="flex items-center gap-2">
@@ -75,8 +97,10 @@
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label for="baseSalary" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Base salary</label>
-              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+              <label for="baseSalary" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Base
+                salary</label>
+              <div
+                class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
                 <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$</span>
                 <input id="baseSalary" type="number" min="0" step="1000" value="460000"
                   class="w-full rounded-r-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
@@ -84,18 +108,23 @@
             </div>
 
             <div>
-              <label for="timeframeYears" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Time frame</label>
-              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+              <label for="timeframeYears" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Time
+                frame</label>
+              <div
+                class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
                 <input id="timeframeYears" type="number" min="0.01" step="0.01" value="1"
                   class="w-full rounded-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
                 <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">years</span>
               </div>
-              <p class="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">Annualized values are normalized back to 1 year.</p>
+              <p class="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">Annualized values are normalized back
+                to 1 year.</p>
             </div>
 
             <div>
-              <label for="coreShiftHours" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Core overnight shift length</label>
-              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+              <label for="coreShiftHours" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Core
+                overnight shift length</label>
+              <div
+                class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
                 <input id="coreShiftHours" type="number" min="0" step="0.25" value="10"
                   class="w-full rounded-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
                 <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">hrs</span>
@@ -103,8 +132,10 @@
             </div>
 
             <div>
-              <label for="daysPerYear" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Days per year</label>
-              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+              <label for="daysPerYear" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Days per
+                year</label>
+              <div
+                class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
                 <input id="daysPerYear" type="number" min="1" step="0.25" value="365.25"
                   class="w-full rounded-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
                 <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">days</span>
@@ -112,19 +143,22 @@
             </div>
 
             <div>
-              <label for="coreNightsOn" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Nights ON per cycle</label>
+              <label for="coreNightsOn" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Nights
+                ON per cycle</label>
               <input id="coreNightsOn" type="number" min="0" step="1" value="7"
                 class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
             </div>
 
             <div>
-              <label for="coreNightsOff" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Nights OFF per cycle</label>
+              <label for="coreNightsOff" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Nights
+                OFF per cycle</label>
               <input id="coreNightsOff" type="number" min="0" step="1" value="14"
                 class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
             </div>
           </div>
 
-          <div class="mt-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3 text-xs text-neutral-600 dark:text-neutral-400 leading-5 theme-transition">
+          <div
+            class="mt-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3 text-xs text-neutral-600 dark:text-neutral-400 leading-5 theme-transition">
             <div class="font-medium text-neutral-700 dark:text-neutral-300">Core hours calculation</div>
             <div class="mt-1">Cycles = (days per year × years) ÷ (nights on + nights off)</div>
             <div>Core hours = cycles × (nights on) × (core shift hours)</div>
@@ -132,14 +166,17 @@
         </section>
 
         <!-- Step 2: Optional shifts card -->
-        <section class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
+        <section
+          class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
           <div class="flex items-start justify-between gap-3 mb-4">
             <div>
               <div class="flex items-center gap-2">
-                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">2</span>
+                <span
+                  class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">2</span>
                 <h2 class="text-base font-semibold">Optional shifts</h2>
               </div>
-              <p class="mt-1 ml-8 text-xs text-neutral-500 dark:text-neutral-400">Enter shift frequency in the unit you prefer.</p>
+              <p class="mt-1 ml-8 text-xs text-neutral-500 dark:text-neutral-400">Enter shift frequency in the unit you
+                prefer.</p>
             </div>
 
             <div class="flex gap-2">
@@ -156,27 +193,37 @@
 
           <div class="grid grid-cols-1 gap-4">
             <!-- Shift A -->
-            <div id="typeACard" class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+            <div id="typeACard"
+              class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
               <div class="flex items-center justify-between">
                 <div>
                   <div class="text-sm font-semibold">Type A</div>
-                  <div id="typeADesc" class="text-xs text-neutral-500 dark:text-neutral-400">9-hour shift at $300/hr</div>
+                  <div id="typeADesc" class="text-xs text-neutral-500 dark:text-neutral-400">9-hour shift at $300/hr
+                  </div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="inline-flex items-center rounded-full bg-neutral-100 dark:bg-neutral-700 px-2.5 py-1 text-[11px] text-neutral-700 dark:text-neutral-300">Add-on</span>
-                  <label class="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                    <input id="enableTypeA" type="checkbox" class="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 focus:ring-neutral-300 dark:focus:ring-neutral-500" />
+                  <span
+                    class="inline-flex items-center rounded-full bg-neutral-100 dark:bg-neutral-700 px-2.5 py-1 text-[11px] text-neutral-700 dark:text-neutral-300">Add-on</span>
+                  <label
+                    class="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                    <input id="enableTypeA" type="checkbox"
+                      class="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 focus:ring-neutral-300 dark:focus:ring-neutral-500" />
                     Include
                   </label>
                 </div>
               </div>
 
               <div id="typeABody" class="mt-3">
-                <label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Enter Type A counts as</label>
-                <div class="mt-2 inline-flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 p-1 shadow-sm theme-transition">
-                  <button type="button" data-unit="year" data-type="A" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per year</button>
-                  <button type="button" data-unit="month" data-type="A" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per month</button>
-                  <button type="button" data-unit="offblock" data-type="A" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per off-block</button>
+                <label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Enter Type A counts
+                  as</label>
+                <div
+                  class="mt-2 inline-flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 p-1 shadow-sm theme-transition">
+                  <button type="button" data-unit="year" data-type="A"
+                    class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per year</button>
+                  <button type="button" data-unit="month" data-type="A"
+                    class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per month</button>
+                  <button type="button" data-unit="offblock" data-type="A"
+                    class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per off-block</button>
                 </div>
                 <p class="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
                   Off-block conversion assumes your schedule pattern (7 on / 14 off) repeats continuously.
@@ -184,19 +231,25 @@
 
                 <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div class="sm:col-span-1">
-                    <label for="dayShiftCount" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Count <span id="unitLabelA">per year</span></label>
+                    <label for="dayShiftCount"
+                      class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Count <span
+                        id="unitLabelA">per year</span></label>
                     <input id="dayShiftCount" type="number" min="0" step="1" value="0"
                       class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
                   </div>
                   <div>
-                    <label for="dayShiftHours" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Hours</label>
+                    <label for="dayShiftHours"
+                      class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Hours</label>
                     <input id="dayShiftHours" type="number" min="0" step="0.25" value="9"
                       class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
                   </div>
                   <div>
-                    <label for="dayShiftRate" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Rate</label>
-                    <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
-                      <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$/hr</span>
+                    <label for="dayShiftRate"
+                      class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Rate</label>
+                    <div
+                      class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                      <span
+                        class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$/hr</span>
                       <input id="dayShiftRate" type="number" min="0" step="1" value="300"
                         class="w-full rounded-r-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
                     </div>
@@ -206,46 +259,62 @@
             </div>
 
             <!-- Shift B -->
-            <div id="typeBCard" class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+            <div id="typeBCard"
+              class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
               <div class="flex items-center justify-between">
                 <div>
                   <div class="text-sm font-semibold">Type B</div>
-                  <div id="typeBDesc" class="text-xs text-neutral-500 dark:text-neutral-400">10-hour overnight shift at $400/hr</div>
+                  <div id="typeBDesc" class="text-xs text-neutral-500 dark:text-neutral-400">10-hour overnight shift at
+                    $400/hr</div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="inline-flex items-center rounded-full bg-neutral-100 dark:bg-neutral-700 px-2.5 py-1 text-[11px] text-neutral-700 dark:text-neutral-300">Add-on</span>
-                  <label class="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                    <input id="enableTypeB" type="checkbox" class="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 focus:ring-neutral-300 dark:focus:ring-neutral-500" />
+                  <span
+                    class="inline-flex items-center rounded-full bg-neutral-100 dark:bg-neutral-700 px-2.5 py-1 text-[11px] text-neutral-700 dark:text-neutral-300">Add-on</span>
+                  <label
+                    class="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                    <input id="enableTypeB" type="checkbox"
+                      class="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 focus:ring-neutral-300 dark:focus:ring-neutral-500" />
                     Include
                   </label>
                 </div>
               </div>
 
               <div id="typeBBody" class="mt-3">
-                <label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Enter Type B counts as</label>
-                <div class="mt-2 inline-flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 p-1 shadow-sm theme-transition">
-                  <button type="button" data-unit="year" data-type="B" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per year</button>
-                  <button type="button" data-unit="month" data-type="B" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per month</button>
-                  <button type="button" data-unit="offblock" data-type="B" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per off-block</button>
+                <label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Enter Type B counts
+                  as</label>
+                <div
+                  class="mt-2 inline-flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 p-1 shadow-sm theme-transition">
+                  <button type="button" data-unit="year" data-type="B"
+                    class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per year</button>
+                  <button type="button" data-unit="month" data-type="B"
+                    class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per month</button>
+                  <button type="button" data-unit="offblock" data-type="B"
+                    class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per off-block</button>
                 </div>
                 <p class="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
                   Off-block conversion assumes your schedule pattern (7 on / 14 off) repeats continuously.
                 </p>
                 <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div class="sm:col-span-1">
-                    <label for="overnightShiftCount" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Count <span id="unitLabelB">per year</span></label>
+                    <label for="overnightShiftCount"
+                      class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Count <span
+                        id="unitLabelB">per year</span></label>
                     <input id="overnightShiftCount" type="number" min="0" step="1" value="0"
                       class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
                   </div>
                   <div>
-                    <label for="overnightShiftHours" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Hours</label>
+                    <label for="overnightShiftHours"
+                      class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Hours</label>
                     <input id="overnightShiftHours" type="number" min="0" step="0.25" value="10"
                       class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
                   </div>
                   <div>
-                    <label for="overnightShiftRate" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Rate</label>
-                    <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
-                      <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$/hr</span>
+                    <label for="overnightShiftRate"
+                      class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Rate</label>
+                    <div
+                      class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                      <span
+                        class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$/hr</span>
                       <input id="overnightShiftRate" type="number" min="0" step="1" value="400"
                         class="w-full rounded-r-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
                     </div>
@@ -254,7 +323,8 @@
               </div>
             </div>
 
-            <div class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3 text-xs text-neutral-600 dark:text-neutral-400 leading-5 theme-transition">
+            <div
+              class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3 text-xs text-neutral-600 dark:text-neutral-400 leading-5 theme-transition">
               Optional pay = (count × hours × rate). Counts are converted into the selected time frame automatically.
             </div>
           </div>
@@ -265,18 +335,22 @@
       <!-- Right Column: Results (Sticky) -->
       <div class="lg:col-span-1">
         <div class="lg:sticky lg:top-6">
-          <section class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
+          <section
+            class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-center gap-2">
-                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">3</span>
+                <span
+                  class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">3</span>
                 <h2 class="text-base font-semibold">Results</h2>
               </div>
-              <span class="inline-flex items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 px-2.5 py-1 text-xs text-neutral-600 dark:text-neutral-400">Live</span>
+              <span
+                class="inline-flex items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 px-2.5 py-1 text-xs text-neutral-600 dark:text-neutral-400">Live</span>
             </div>
 
             <!-- Key Metrics -->
             <div class="space-y-4 mb-6">
-              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 p-4 theme-transition">
+              <div
+                class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 p-4 theme-transition">
                 <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Total compensation</div>
                 <div class="mt-2 flex items-baseline gap-2">
                   <div id="totalComp" class="text-3xl font-semibold tracking-tight">—</div>
@@ -284,20 +358,24 @@
                 <div id="compBreakdown" class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">—</div>
               </div>
 
-              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 p-4 theme-transition">
+              <div
+                class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 p-4 theme-transition">
                 <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Effective hourly rate</div>
                 <div class="mt-2 flex items-baseline gap-2">
-                  <div id="effectiveHourly" class="text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">—</div>
+                  <div id="effectiveHourly"
+                    class="text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">—</div>
                 </div>
                 <div id="hourBreakdown" class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">—</div>
               </div>
 
-              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+              <div
+                class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
                 <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Total hours worked</div>
                 <div id="totalHours" class="mt-2 text-xl font-semibold tracking-tight">—</div>
               </div>
 
-              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+              <div
+                class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
                 <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Annualized</div>
                 <div id="annualized" class="mt-2 text-xl font-semibold tracking-tight">—</div>
                 <div id="annualizedDetail" class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">—</div>
@@ -305,7 +383,8 @@
             </div>
 
             <!-- Compensation Breakdown Chart -->
-            <div class="mb-6 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-4 theme-transition">
+            <div
+              class="mb-6 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-4 theme-transition">
               <div class="text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-3">Compensation Breakdown</div>
               <div class="flex items-center justify-center">
                 <svg id="compChart" width="160" height="160" viewBox="0 0 160 160"></svg>
@@ -314,14 +393,16 @@
             </div>
 
             <!-- Hours Breakdown Chart -->
-            <div class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-4 theme-transition">
+            <div
+              class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-4 theme-transition">
               <div class="text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-3">Hours Breakdown</div>
               <svg id="hoursChart" width="100%" height="80" viewBox="0 0 300 80" preserveAspectRatio="none"></svg>
               <div id="hoursLegend" class="mt-3 space-y-1 text-xs"></div>
             </div>
 
             <!-- Notes -->
-            <div class="mt-6 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+            <div
+              class="mt-6 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
               <div class="text-xs font-medium text-neutral-700 dark:text-neutral-300">Notes</div>
               <ul class="mt-2 list-disc pl-5 text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
                 <li>Effective hourly = total compensation ÷ total worked hours.</li>
@@ -460,7 +541,7 @@
       saveTimeout = setTimeout(() => {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
-        } catch {}
+        } catch { }
       }, 300); // Debounced save
     }
 
@@ -532,7 +613,7 @@
 
     function setCoreLocked(locked) {
       state.coreLocked = locked;
-      const coreIds = ['baseSalary','timeframeYears','coreShiftHours','daysPerYear','coreNightsOn','coreNightsOff'];
+      const coreIds = ['baseSalary', 'timeframeYears', 'coreShiftHours', 'daysPerYear', 'coreNightsOn', 'coreNightsOff'];
       coreIds.forEach(id => {
         const el = elements[id] || $(id);
         el.disabled = locked;
@@ -542,19 +623,19 @@
 
       elements.lockCoreBtn.setAttribute('aria-pressed', locked ? 'true' : 'false');
       if (locked) {
-        elements.lockCoreBtn.classList.remove('bg-neutral-900','dark:bg-neutral-100','hover:bg-neutral-800','dark:hover:bg-neutral-200','text-white','dark:text-neutral-900');
-        elements.lockCoreBtn.classList.add('bg-white','dark:bg-neutral-800','text-neutral-900','dark:text-neutral-300');
+        elements.lockCoreBtn.classList.remove('bg-neutral-900', 'dark:bg-neutral-100', 'hover:bg-neutral-800', 'dark:hover:bg-neutral-200', 'text-white', 'dark:text-neutral-900');
+        elements.lockCoreBtn.classList.add('bg-white', 'dark:bg-neutral-800', 'text-neutral-900', 'dark:text-neutral-300');
         elements.lockCoreLabel.textContent = 'Unlock';
       } else {
-        elements.lockCoreBtn.classList.remove('bg-white','dark:bg-neutral-800','text-neutral-900','dark:text-neutral-300');
-        elements.lockCoreBtn.classList.add('bg-neutral-900','dark:bg-neutral-100','hover:bg-neutral-800','dark:hover:bg-neutral-200','text-white','dark:text-neutral-900');
+        elements.lockCoreBtn.classList.remove('bg-white', 'dark:bg-neutral-800', 'text-neutral-900', 'dark:text-neutral-300');
+        elements.lockCoreBtn.classList.add('bg-neutral-900', 'dark:bg-neutral-100', 'hover:bg-neutral-800', 'dark:hover:bg-neutral-200', 'text-white', 'dark:text-neutral-900');
         elements.lockCoreLabel.textContent = 'Lock';
       }
       savePrefs(state);
     }
 
     function hydrateFromState() {
-      Object.entries(DEFAULTS).forEach(([k,v]) => {
+      Object.entries(DEFAULTS).forEach(([k, v]) => {
         const el = elements[k] || $(k);
         if (el && typeof state[k] !== 'undefined') {
           el.value = state[k];
@@ -583,8 +664,8 @@
     // ---- Calculation (Extracted Pure Function) ----
     function computeResults(inputs) {
       const { baseSalary, years, daysPerYear, coreShiftHours, coreOn, coreOff,
-              aEnabled, aCount, aHours, aRate, bEnabled, bCount, bHours, bRate,
-              unitMultA, unitMultB } = inputs;
+        aEnabled, aCount, aHours, aRate, bEnabled, bCount, bHours, bRate,
+        unitMultA, unitMultB } = inputs;
 
       const cycleDays = Math.max(coreOn + coreOff, 0.0001);
       const cycles = (daysPerYear * years) / cycleDays;
@@ -817,7 +898,7 @@
 
       // Unit buttons
       document.querySelectorAll('.unitBtn').forEach(btn => {
-        btn.classList.add('text-neutral-700','dark:text-neutral-300','bg-white','dark:bg-neutral-900');
+        btn.classList.add('text-neutral-700', 'dark:text-neutral-300', 'bg-white', 'dark:bg-neutral-900');
         btn.addEventListener('click', () => setUnitMode(btn.dataset.unit, btn.dataset.type));
       });
 
@@ -829,14 +910,14 @@
 
       // Reset core
       $('resetCoreBtn').addEventListener('click', () => {
-        const coreIds = ['baseSalary','timeframeYears','coreShiftHours','daysPerYear','coreNightsOn','coreNightsOff'];
+        const coreIds = ['baseSalary', 'timeframeYears', 'coreShiftHours', 'daysPerYear', 'coreNightsOn', 'coreNightsOff'];
         coreIds.forEach(id => { elements[id].value = DEFAULTS[id]; });
         calc();
       });
 
       // Reset optional
       $('resetOptionalBtn').addEventListener('click', () => {
-        const optIds = ['dayShiftCount','overnightShiftCount','dayShiftHours','dayShiftRate','overnightShiftHours','overnightShiftRate'];
+        const optIds = ['dayShiftCount', 'overnightShiftCount', 'dayShiftHours', 'dayShiftRate', 'overnightShiftHours', 'overnightShiftRate'];
         optIds.forEach(id => { elements[id].value = DEFAULTS[id]; });
         calc();
       });
@@ -861,8 +942,8 @@
 
       // Inputs recalc
       const inputIds = [
-        'baseSalary','timeframeYears','coreShiftHours','daysPerYear','coreNightsOn','coreNightsOff',
-        'dayShiftCount','dayShiftHours','dayShiftRate','overnightShiftCount','overnightShiftHours','overnightShiftRate'
+        'baseSalary', 'timeframeYears', 'coreShiftHours', 'daysPerYear', 'coreNightsOn', 'coreNightsOff',
+        'dayShiftCount', 'dayShiftHours', 'dayShiftRate', 'overnightShiftCount', 'overnightShiftHours', 'overnightShiftRate'
       ];
       inputIds.forEach(id => {
         elements[id].addEventListener('input', calc);
@@ -877,4 +958,5 @@
     calc();
   </script>
 </body>
+
 </html>
