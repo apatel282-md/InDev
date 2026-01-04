@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nemours Compensation Calculator v2</title>
+  <!-- Tailwind via CDN with dark mode support -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <style>
+    .theme-transition { transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+  </style>
+  <meta name="color-scheme" content="light dark" />
+</head>
+<body class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 theme-transition">
+  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+
+    <!-- Header with Dark Mode Toggle -->
+    <header class="mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div class="flex flex-col gap-2">
+          <h1 class="text-2xl font-semibold tracking-tight">Nemours Compensation & Effective Hourly Calculator v2</h1>
+          <p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl">
+            Computes total compensation and effective hourly rate using base salary, the core 7-on/14-off schedule, and two optional paid shift types.
+          </p>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <button id="themeToggle" type="button"
+          class="self-start rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700 active:scale-[0.98] theme-transition flex items-center gap-2"
+          aria-label="Toggle dark mode">
+          <svg id="iconLight" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+          </svg>
+          <svg id="iconDark" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+          </svg>
+          <span id="themeLabel">Light</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+      <!-- Left Column: Inputs -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Step 1: Core assumptions card -->
+        <section class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">1</span>
+                <h2 class="text-base font-semibold">Core assumptions</h2>
+              </div>
+              <p class="mt-1 ml-8 text-xs text-neutral-500 dark:text-neutral-400">Edit once, then lock to avoid accidental changes.</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="resetCoreBtn" type="button"
+                class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700 active:scale-[0.99] theme-transition">
+                Reset
+              </button>
+
+              <button id="lockCoreBtn" type="button" aria-pressed="false"
+                class="group rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-900 dark:bg-neutral-100 px-3 py-2 text-xs font-medium text-white dark:text-neutral-900 shadow-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.99] theme-transition">
+                <span id="lockCoreLabel">Lock</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label for="baseSalary" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Base salary</label>
+              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$</span>
+                <input id="baseSalary" type="number" min="0" step="1000" value="460000"
+                  class="w-full rounded-r-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
+              </div>
+            </div>
+
+            <div>
+              <label for="timeframeYears" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Time frame</label>
+              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                <input id="timeframeYears" type="number" min="0.01" step="0.01" value="1"
+                  class="w-full rounded-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
+                <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">years</span>
+              </div>
+              <p class="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">Annualized values are normalized back to 1 year.</p>
+            </div>
+
+            <div>
+              <label for="coreShiftHours" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Core overnight shift length</label>
+              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                <input id="coreShiftHours" type="number" min="0" step="0.25" value="10"
+                  class="w-full rounded-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
+                <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">hrs</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="daysPerYear" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Days per year</label>
+              <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                <input id="daysPerYear" type="number" min="1" step="0.25" value="365.25"
+                  class="w-full rounded-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
+                <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">days</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="coreNightsOn" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Nights ON per cycle</label>
+              <input id="coreNightsOn" type="number" min="0" step="1" value="7"
+                class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
+            </div>
+
+            <div>
+              <label for="coreNightsOff" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Nights OFF per cycle</label>
+              <input id="coreNightsOff" type="number" min="0" step="1" value="14"
+                class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3 text-xs text-neutral-600 dark:text-neutral-400 leading-5 theme-transition">
+            <div class="font-medium text-neutral-700 dark:text-neutral-300">Core hours calculation</div>
+            <div class="mt-1">Cycles = (days per year × years) ÷ (nights on + nights off)</div>
+            <div>Core hours = cycles × (nights on) × (core shift hours)</div>
+          </div>
+        </section>
+
+        <!-- Step 2: Optional shifts card -->
+        <section class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">2</span>
+                <h2 class="text-base font-semibold">Optional shifts</h2>
+              </div>
+              <p class="mt-1 ml-8 text-xs text-neutral-500 dark:text-neutral-400">Enter shift frequency in the unit you prefer.</p>
+            </div>
+
+            <div class="flex gap-2">
+              <button id="resetOptionalBtn" type="button"
+                class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700 active:scale-[0.99] theme-transition">
+                Reset
+              </button>
+              <button id="exampleBtn" type="button"
+                class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-900 dark:bg-neutral-100 px-3 py-2 text-xs font-medium text-white dark:text-neutral-900 shadow-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.99] theme-transition">
+                Example
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4">
+            <!-- Shift A -->
+            <div id="typeACard" class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-sm font-semibold">Type A</div>
+                  <div id="typeADesc" class="text-xs text-neutral-500 dark:text-neutral-400">9-hour shift at $300/hr</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="inline-flex items-center rounded-full bg-neutral-100 dark:bg-neutral-700 px-2.5 py-1 text-[11px] text-neutral-700 dark:text-neutral-300">Add-on</span>
+                  <label class="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                    <input id="enableTypeA" type="checkbox" class="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 focus:ring-neutral-300 dark:focus:ring-neutral-500" />
+                    Include
+                  </label>
+                </div>
+              </div>
+
+              <div id="typeABody" class="mt-3">
+                <label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Enter Type A counts as</label>
+                <div class="mt-2 inline-flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 p-1 shadow-sm theme-transition">
+                  <button type="button" data-unit="year" data-type="A" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per year</button>
+                  <button type="button" data-unit="month" data-type="A" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per month</button>
+                  <button type="button" data-unit="offblock" data-type="A" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per off-block</button>
+                </div>
+                <p class="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
+                  Off-block conversion assumes your schedule pattern (7 on / 14 off) repeats continuously.
+                </p>
+
+                <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div class="sm:col-span-1">
+                    <label for="dayShiftCount" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Count <span id="unitLabelA">per year</span></label>
+                    <input id="dayShiftCount" type="number" min="0" step="1" value="0"
+                      class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
+                  </div>
+                  <div>
+                    <label for="dayShiftHours" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Hours</label>
+                    <input id="dayShiftHours" type="number" min="0" step="0.25" value="9"
+                      class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
+                  </div>
+                  <div>
+                    <label for="dayShiftRate" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Rate</label>
+                    <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                      <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$/hr</span>
+                      <input id="dayShiftRate" type="number" min="0" step="1" value="300"
+                        class="w-full rounded-r-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shift B -->
+            <div id="typeBCard" class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-sm font-semibold">Type B</div>
+                  <div id="typeBDesc" class="text-xs text-neutral-500 dark:text-neutral-400">10-hour overnight shift at $400/hr</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="inline-flex items-center rounded-full bg-neutral-100 dark:bg-neutral-700 px-2.5 py-1 text-[11px] text-neutral-700 dark:text-neutral-300">Add-on</span>
+                  <label class="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                    <input id="enableTypeB" type="checkbox" class="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 focus:ring-neutral-300 dark:focus:ring-neutral-500" />
+                    Include
+                  </label>
+                </div>
+              </div>
+
+              <div id="typeBBody" class="mt-3">
+                <label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Enter Type B counts as</label>
+                <div class="mt-2 inline-flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 p-1 shadow-sm theme-transition">
+                  <button type="button" data-unit="year" data-type="B" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per year</button>
+                  <button type="button" data-unit="month" data-type="B" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per month</button>
+                  <button type="button" data-unit="offblock" data-type="B" class="unitBtn rounded-lg px-3 py-1.5 text-xs font-medium theme-transition">Per off-block</button>
+                </div>
+                <p class="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
+                  Off-block conversion assumes your schedule pattern (7 on / 14 off) repeats continuously.
+                </p>
+                <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div class="sm:col-span-1">
+                    <label for="overnightShiftCount" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Count <span id="unitLabelB">per year</span></label>
+                    <input id="overnightShiftCount" type="number" min="0" step="1" value="0"
+                      class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
+                  </div>
+                  <div>
+                    <label for="overnightShiftHours" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Hours</label>
+                    <input id="overnightShiftHours" type="number" min="0" step="0.25" value="10"
+                      class="mt-1 w-full rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 theme-transition dark:text-neutral-100" />
+                  </div>
+                  <div>
+                    <label for="overnightShiftRate" class="block text-xs font-medium text-neutral-700 dark:text-neutral-300">Rate</label>
+                    <div class="mt-1 flex rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-neutral-400 dark:focus-within:ring-neutral-500 theme-transition">
+                      <span class="inline-flex items-center px-3 text-sm text-neutral-500 dark:text-neutral-400">$/hr</span>
+                      <input id="overnightShiftRate" type="number" min="0" step="1" value="400"
+                        class="w-full rounded-r-xl bg-transparent px-3 py-2 text-sm outline-none dark:text-neutral-100" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3 text-xs text-neutral-600 dark:text-neutral-400 leading-5 theme-transition">
+              Optional pay = (count × hours × rate). Counts are converted into the selected time frame automatically.
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Right Column: Results (Sticky) -->
+      <div class="lg:col-span-1">
+        <div class="lg:sticky lg:top-6">
+          <section class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 shadow-sm theme-transition">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-bold">3</span>
+                <h2 class="text-base font-semibold">Results</h2>
+              </div>
+              <span class="inline-flex items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 px-2.5 py-1 text-xs text-neutral-600 dark:text-neutral-400">Live</span>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="space-y-4 mb-6">
+              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 p-4 theme-transition">
+                <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Total compensation</div>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <div id="totalComp" class="text-3xl font-semibold tracking-tight">—</div>
+                </div>
+                <div id="compBreakdown" class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">—</div>
+              </div>
+
+              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 p-4 theme-transition">
+                <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Effective hourly rate</div>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <div id="effectiveHourly" class="text-3xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">—</div>
+                </div>
+                <div id="hourBreakdown" class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">—</div>
+              </div>
+
+              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+                <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Total hours worked</div>
+                <div id="totalHours" class="mt-2 text-xl font-semibold tracking-tight">—</div>
+              </div>
+
+              <div class="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+                <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Annualized</div>
+                <div id="annualized" class="mt-2 text-xl font-semibold tracking-tight">—</div>
+                <div id="annualizedDetail" class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">—</div>
+              </div>
+            </div>
+
+            <!-- Compensation Breakdown Chart -->
+            <div class="mb-6 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-4 theme-transition">
+              <div class="text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-3">Compensation Breakdown</div>
+              <div class="flex items-center justify-center">
+                <svg id="compChart" width="160" height="160" viewBox="0 0 160 160"></svg>
+              </div>
+              <div id="compLegend" class="mt-3 space-y-1 text-xs"></div>
+            </div>
+
+            <!-- Hours Breakdown Chart -->
+            <div class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-4 theme-transition">
+              <div class="text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-3">Hours Breakdown</div>
+              <svg id="hoursChart" width="100%" height="80" viewBox="0 0 300 80" preserveAspectRatio="none"></svg>
+              <div id="hoursLegend" class="mt-3 space-y-1 text-xs"></div>
+            </div>
+
+            <!-- Notes -->
+            <div class="mt-6 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 theme-transition">
+              <div class="text-xs font-medium text-neutral-700 dark:text-neutral-300">Notes</div>
+              <ul class="mt-2 list-disc pl-5 text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
+                <li>Effective hourly = total compensation ÷ total worked hours.</li>
+                <li>Annualized values normalize back to 1 year.</li>
+                <li>Charts update in real-time as you modify inputs.</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="mt-8 text-xs text-neutral-500 dark:text-neutral-400">
+      v2 improvements: Code optimizations, dark mode, data visualizations, improved mobile layout. All data stays local.
+    </footer>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // ---- DOM Element Cache ----
+    const elements = {};
+
+    function initElements() {
+      const ids = [
+        'baseSalary', 'timeframeYears', 'coreShiftHours', 'daysPerYear', 'coreNightsOn', 'coreNightsOff',
+        'dayShiftCount', 'dayShiftHours', 'dayShiftRate', 'overnightShiftCount', 'overnightShiftHours', 'overnightShiftRate',
+        'enableTypeA', 'enableTypeB', 'typeACard', 'typeBCard', 'typeABody', 'typeBBody', 'typeADesc', 'typeBDesc',
+        'unitLabelA', 'unitLabelB', 'totalComp', 'compBreakdown', 'effectiveHourly', 'hourBreakdown',
+        'totalHours', 'annualized', 'annualizedDetail', 'lockCoreBtn', 'lockCoreLabel',
+        'themeToggle', 'themeLabel', 'iconLight', 'iconDark', 'compChart', 'compLegend', 'hoursChart', 'hoursLegend'
+      ];
+      ids.forEach(id => { elements[id] = $(id); });
+    }
+
+    // ---- Defaults ----
+    const DEFAULTS = {
+      baseSalary: 460000,
+      timeframeYears: 1,
+      coreShiftHours: 10,
+      daysPerYear: 365.25,
+      coreNightsOn: 7,
+      coreNightsOff: 14,
+      dayShiftCount: 0,
+      overnightShiftCount: 0,
+      dayShiftHours: 9,
+      dayShiftRate: 300,
+      overnightShiftHours: 10,
+      overnightShiftRate: 400,
+      unitModeA: 'year',
+      unitModeB: 'year',
+      enableTypeA: true,
+      enableTypeB: true,
+      coreLocked: false,
+      darkMode: false,
+    };
+
+    const STORAGE_KEY = 'nemours_calc_prefs_v2';
+
+    // ---- Shift Type Configuration (DRY) ----
+    const shiftTypes = {
+      A: {
+        countId: 'dayShiftCount',
+        hoursId: 'dayShiftHours',
+        rateId: 'dayShiftRate',
+        enableId: 'enableTypeA',
+        cardId: 'typeACard',
+        bodyId: 'typeABody',
+        descId: 'typeADesc',
+        labelId: 'unitLabelA',
+        unitModeKey: 'unitModeA',
+      },
+      B: {
+        countId: 'overnightShiftCount',
+        hoursId: 'overnightShiftHours',
+        rateId: 'overnightShiftRate',
+        enableId: 'enableTypeB',
+        cardId: 'typeBCard',
+        bodyId: 'typeBBody',
+        descId: 'typeBDesc',
+        labelId: 'unitLabelB',
+        unitModeKey: 'unitModeB',
+      }
+    };
+
+    // ---- Theme Management ----
+    function initTheme() {
+      // Check system preference and localStorage
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+
+      state.darkMode = isDark;
+      applyTheme(isDark);
+    }
+
+    function applyTheme(isDark) {
+      const html = document.documentElement;
+      if (isDark) {
+        html.classList.add('dark');
+        elements.iconLight.classList.add('hidden');
+        elements.iconDark.classList.remove('hidden');
+        elements.themeLabel.textContent = 'Dark';
+      } else {
+        html.classList.remove('dark');
+        elements.iconLight.classList.remove('hidden');
+        elements.iconDark.classList.add('hidden');
+        elements.themeLabel.textContent = 'Light';
+      }
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    function toggleTheme() {
+      state.darkMode = !state.darkMode;
+      applyTheme(state.darkMode);
+    }
+
+    // ---- Storage ----
+    function loadPrefs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { ...DEFAULTS };
+        const prefs = { ...DEFAULTS, ...JSON.parse(raw) };
+        if (typeof prefs.enableTypeA !== 'boolean') prefs.enableTypeA = DEFAULTS.enableTypeA;
+        if (typeof prefs.enableTypeB !== 'boolean') prefs.enableTypeB = DEFAULTS.enableTypeB;
+        return prefs;
+      } catch {
+        return { ...DEFAULTS };
+      }
+    }
+
+    let saveTimeout;
+    function savePrefs(p) {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+        } catch {}
+      }, 300); // Debounced save
+    }
+
+    function num(id) {
+      const el = elements[id] || $(id);
+      const v = parseFloat(el.value);
+      return Number.isFinite(v) ? v : 0;
+    }
+
+    function fmtMoney0(x) {
+      return x.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    }
+
+    function fmtMoney2(x) {
+      return x.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+    }
+
+    function fmtNum(x, digits = 0) {
+      return x.toLocaleString(undefined, { maximumFractionDigits: digits });
+    }
+
+    // ---- Unit Conversion ----
+    function unitToTimeframeMultiplier(unitMode, years, daysPerYear, coreOn, coreOff) {
+      if (unitMode === 'year') return years;
+      if (unitMode === 'month') return years * 12;
+      if (unitMode === 'offblock') {
+        const cycleDays = Math.max(coreOn + coreOff, 0.0001);
+        const cyclesPerYear = daysPerYear / cycleDays;
+        return years * cyclesPerYear;
+      }
+      return years;
+    }
+
+    // ---- Unit Label Lookup (Bug Fix) ----
+    const unitLabels = {
+      year: 'per year',
+      month: 'per month',
+      offblock: 'per off-block'
+    };
+
+    function setUnitMode(unitMode, type, suppressCalc = false) {
+      const config = shiftTypes[type];
+      state[config.unitModeKey] = unitMode;
+
+      // Update button styles
+      document.querySelectorAll('.unitBtn').forEach(btn => {
+        if (btn.dataset.type !== type) return;
+        const active = btn.dataset.unit === unitMode;
+        btn.classList.toggle('bg-neutral-900', active);
+        btn.classList.toggle('dark:bg-neutral-100', active);
+        btn.classList.toggle('text-white', active);
+        btn.classList.toggle('dark:text-neutral-900', active);
+        btn.classList.toggle('shadow-sm', active);
+        btn.classList.toggle('text-neutral-700', !active);
+        btn.classList.toggle('dark:text-neutral-300', !active);
+        btn.classList.toggle('bg-white', !active);
+        btn.classList.toggle('dark:bg-neutral-900', !active);
+      });
+
+      // Update inline labels using fixed lookup
+      const label = unitLabels[unitMode] || 'per year';
+      elements[config.labelId].textContent = label;
+
+      if (!suppressCalc) {
+        savePrefs(state);
+        calc();
+      }
+    }
+
+    function setCoreLocked(locked) {
+      state.coreLocked = locked;
+      const coreIds = ['baseSalary','timeframeYears','coreShiftHours','daysPerYear','coreNightsOn','coreNightsOff'];
+      coreIds.forEach(id => {
+        const el = elements[id] || $(id);
+        el.disabled = locked;
+        el.classList.toggle('opacity-60', locked);
+        el.classList.toggle('cursor-not-allowed', locked);
+      });
+
+      elements.lockCoreBtn.setAttribute('aria-pressed', locked ? 'true' : 'false');
+      if (locked) {
+        elements.lockCoreBtn.classList.remove('bg-neutral-900','dark:bg-neutral-100','hover:bg-neutral-800','dark:hover:bg-neutral-200','text-white','dark:text-neutral-900');
+        elements.lockCoreBtn.classList.add('bg-white','dark:bg-neutral-800','text-neutral-900','dark:text-neutral-300');
+        elements.lockCoreLabel.textContent = 'Unlock';
+      } else {
+        elements.lockCoreBtn.classList.remove('bg-white','dark:bg-neutral-800','text-neutral-900','dark:text-neutral-300');
+        elements.lockCoreBtn.classList.add('bg-neutral-900','dark:bg-neutral-100','hover:bg-neutral-800','dark:hover:bg-neutral-200','text-white','dark:text-neutral-900');
+        elements.lockCoreLabel.textContent = 'Lock';
+      }
+      savePrefs(state);
+    }
+
+    function hydrateFromState() {
+      Object.entries(DEFAULTS).forEach(([k,v]) => {
+        const el = elements[k] || $(k);
+        if (el && typeof state[k] !== 'undefined') {
+          el.value = state[k];
+        }
+      });
+      setUnitMode(state.unitModeA, 'A', true);
+      setUnitMode(state.unitModeB, 'B', true);
+      setShiftEnabled(!!state.enableTypeA, 'A', true);
+      setShiftEnabled(!!state.enableTypeB, 'B', true);
+      setCoreLocked(!!state.coreLocked);
+    }
+
+    function captureToState() {
+      const keys = Object.keys(DEFAULTS).filter(k => elements[k] || $(k));
+      keys.forEach(k => {
+        const el = elements[k] || $(k);
+        if (el && el.type === 'checkbox') {
+          state[k] = el.checked;
+        } else if (el) {
+          state[k] = num(k);
+        }
+      });
+      savePrefs(state);
+    }
+
+    // ---- Calculation (Extracted Pure Function) ----
+    function computeResults(inputs) {
+      const { baseSalary, years, daysPerYear, coreShiftHours, coreOn, coreOff,
+              aEnabled, aCount, aHours, aRate, bEnabled, bCount, bHours, bRate,
+              unitMultA, unitMultB } = inputs;
+
+      const cycleDays = Math.max(coreOn + coreOff, 0.0001);
+      const cycles = (daysPerYear * years) / cycleDays;
+      const coreHours = cycles * coreOn * coreShiftHours;
+
+      const aCountTF = aEnabled ? aCount * unitMultA : 0;
+      const bCountTF = bEnabled ? bCount * unitMultB : 0;
+
+      const optionalPayA = aCountTF * aHours * aRate;
+      const optionalPayB = bCountTF * bHours * bRate;
+      const optionalPay = optionalPayA + optionalPayB;
+      const optionalHours = (aCountTF * aHours) + (bCountTF * bHours);
+
+      const basePayTimeframe = baseSalary * years;
+      const totalComp = basePayTimeframe + optionalPay;
+
+      const totalHours = coreHours + optionalHours;
+      const effHourly = totalHours > 0 ? (totalComp / totalHours) : 0;
+
+      const annualizedComp = totalComp / years;
+      const annualizedHours = totalHours / years;
+      const annualizedEffHourly = annualizedHours > 0 ? (annualizedComp / annualizedHours) : 0;
+
+      return {
+        totalComp, basePayTimeframe, optionalPay, optionalPayA, optionalPayB,
+        effHourly, coreHours, optionalHours, totalHours,
+        annualizedComp, annualizedHours, annualizedEffHourly
+      };
+    }
+
+    // ---- Rendering ----
+    function renderResults(results) {
+      elements.totalComp.textContent = fmtMoney0(results.totalComp);
+      elements.compBreakdown.textContent = `Base: ${fmtMoney0(results.basePayTimeframe)} · Optional: ${fmtMoney0(results.optionalPay)}`;
+
+      elements.effectiveHourly.textContent = `${fmtMoney2(results.effHourly)}/hr`;
+      elements.hourBreakdown.textContent = `Core: ${fmtNum(results.coreHours, 0)} hrs · Optional: ${fmtNum(results.optionalHours, 0)} hrs`;
+
+      elements.totalHours.textContent = `${fmtNum(results.totalHours, 0)} hrs`;
+
+      elements.annualized.textContent = `${fmtMoney0(results.annualizedComp)} / yr`;
+      elements.annualizedDetail.textContent = `Hours: ${fmtNum(results.annualizedHours, 0)} hrs/yr · Effective: ${fmtMoney2(results.annualizedEffHourly)}/hr`;
+    }
+
+    // ---- Dynamic Shift Descriptions ----
+    function updateShiftDescriptions() {
+      const aHours = num('dayShiftHours');
+      const aRate = num('dayShiftRate');
+      const bHours = num('overnightShiftHours');
+      const bRate = num('overnightShiftRate');
+
+      elements.typeADesc.textContent = `${aHours}-hour shift at ${fmtMoney0(aRate)}/hr`;
+      elements.typeBDesc.textContent = `${bHours}-hour shift at ${fmtMoney0(bRate)}/hr`;
+    }
+
+    // ---- Data Visualization ----
+    function renderCompChart(results) {
+      const chart = elements.compChart;
+      const legend = elements.compLegend;
+
+      const data = [
+        { label: 'Base Salary', value: results.basePayTimeframe, color: '#737373' }, // neutral-500
+        { label: 'Type A', value: results.optionalPayA, color: '#3b82f6' }, // blue-500
+        { label: 'Type B', value: results.optionalPayB, color: '#8b5cf6' }, // violet-500
+      ].filter(d => d.value > 0);
+
+      const total = data.reduce((sum, d) => sum + d.value, 0);
+      if (total === 0) {
+        chart.innerHTML = '<text x="80" y="80" text-anchor="middle" class="text-xs fill-neutral-400">No data</text>';
+        legend.innerHTML = '';
+        return;
+      }
+
+      const cx = 80, cy = 80, radius = 60, innerRadius = 35;
+      let startAngle = -90;
+
+      chart.innerHTML = data.map((d, i) => {
+        const percentage = (d.value / total) * 100;
+        const angle = (percentage / 100) * 360;
+        const endAngle = startAngle + angle;
+
+        const x1 = cx + radius * Math.cos((startAngle * Math.PI) / 180);
+        const y1 = cy + radius * Math.sin((startAngle * Math.PI) / 180);
+        const x2 = cx + radius * Math.cos((endAngle * Math.PI) / 180);
+        const y2 = cy + radius * Math.sin((endAngle * Math.PI) / 180);
+
+        const xi1 = cx + innerRadius * Math.cos((startAngle * Math.PI) / 180);
+        const yi1 = cy + innerRadius * Math.sin((startAngle * Math.PI) / 180);
+        const xi2 = cx + innerRadius * Math.cos((endAngle * Math.PI) / 180);
+        const yi2 = cy + innerRadius * Math.sin((endAngle * Math.PI) / 180);
+
+        const largeArc = angle > 180 ? 1 : 0;
+
+        const path = `
+          M ${x1} ${y1}
+          A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}
+          L ${xi2} ${yi2}
+          A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${xi1} ${yi1}
+          Z
+        `;
+
+        startAngle = endAngle;
+
+        return `<path d="${path}" fill="${d.color}" class="theme-transition" opacity="0.9" />`;
+      }).join('');
+
+      legend.innerHTML = data.map(d => {
+        const percentage = ((d.value / total) * 100).toFixed(1);
+        return `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-sm" style="background-color: ${d.color}"></div>
+              <span class="text-neutral-700 dark:text-neutral-300">${d.label}</span>
+            </div>
+            <span class="text-neutral-600 dark:text-neutral-400">${fmtMoney0(d.value)} (${percentage}%)</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderHoursChart(results) {
+      const chart = elements.hoursChart;
+      const legend = elements.hoursLegend;
+
+      const coreHours = results.coreHours;
+      const optionalHours = results.optionalHours;
+      const total = coreHours + optionalHours;
+
+      if (total === 0) {
+        chart.innerHTML = '<text x="150" y="40" text-anchor="middle" class="text-xs fill-neutral-400">No data</text>';
+        legend.innerHTML = '';
+        return;
+      }
+
+      const coreWidth = (coreHours / total) * 280;
+      const optionalWidth = (optionalHours / total) * 280;
+
+      chart.innerHTML = `
+        <rect x="10" y="20" width="${coreWidth}" height="40" fill="#737373" rx="4" class="theme-transition" opacity="0.9" />
+        <rect x="${10 + coreWidth}" y="20" width="${optionalWidth}" height="40" fill="#10b981" rx="4" class="theme-transition" opacity="0.9" />
+      `;
+
+      const corePercentage = ((coreHours / total) * 100).toFixed(1);
+      const optionalPercentage = ((optionalHours / total) * 100).toFixed(1);
+
+      legend.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-sm bg-neutral-500"></div>
+            <span class="text-neutral-700 dark:text-neutral-300">Core Hours</span>
+          </div>
+          <span class="text-neutral-600 dark:text-neutral-400">${fmtNum(coreHours, 0)} hrs (${corePercentage}%)</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-sm bg-emerald-500"></div>
+            <span class="text-neutral-700 dark:text-neutral-300">Optional Hours</span>
+          </div>
+          <span class="text-neutral-600 dark:text-neutral-400">${fmtNum(optionalHours, 0)} hrs (${optionalPercentage}%)</span>
+        </div>
+      `;
+    }
+
+    // ---- Main Calculation ----
+    function calc() {
+      const baseSalary = num('baseSalary');
+      const years = Math.max(num('timeframeYears'), 0.0001);
+      const daysPerYear = num('daysPerYear');
+      const coreShiftHours = num('coreShiftHours');
+      const coreOn = num('coreNightsOn');
+      const coreOff = num('coreNightsOff');
+
+      const unitMultA = unitToTimeframeMultiplier(state.unitModeA, years, daysPerYear, coreOn, coreOff);
+      const unitMultB = unitToTimeframeMultiplier(state.unitModeB, years, daysPerYear, coreOn, coreOff);
+
+      const aEnabled = !!state.enableTypeA;
+      const aCount = num('dayShiftCount');
+      const aHours = num('dayShiftHours');
+      const aRate = num('dayShiftRate');
+
+      const bEnabled = !!state.enableTypeB;
+      const bCount = num('overnightShiftCount');
+      const bHours = num('overnightShiftHours');
+      const bRate = num('overnightShiftRate');
+
+      const results = computeResults({
+        baseSalary, years, daysPerYear, coreShiftHours, coreOn, coreOff,
+        aEnabled, aCount, aHours, aRate, bEnabled, bCount, bHours, bRate,
+        unitMultA, unitMultB
+      });
+
+      renderResults(results);
+      renderCompChart(results);
+      renderHoursChart(results);
+      updateShiftDescriptions();
+      captureToState();
+    }
+
+    // ---- Shift Enable/Disable (Generic) ----
+    function setShiftEnabled(enabled, type, suppressCalc = false) {
+      const config = shiftTypes[type];
+      state[config.enableId] = enabled;
+
+      const enableEl = elements[config.enableId];
+      const cardEl = elements[config.cardId];
+      const bodyEl = elements[config.bodyId];
+
+      enableEl.checked = enabled;
+      cardEl.classList.toggle('opacity-60', !enabled);
+      bodyEl.classList.toggle('pointer-events-none', !enabled);
+
+      [config.countId, config.hoursId, config.rateId].forEach(id => {
+        const el = elements[id];
+        if (el) el.disabled = !enabled;
+      });
+
+      if (!suppressCalc) {
+        savePrefs(state);
+        calc();
+      }
+    }
+
+    // ---- State Init ----
+    let state = loadPrefs();
+
+    // ---- Event Listeners ----
+    function initEventListeners() {
+      // Theme toggle
+      elements.themeToggle.addEventListener('click', toggleTheme);
+
+      // Unit buttons
+      document.querySelectorAll('.unitBtn').forEach(btn => {
+        btn.classList.add('text-neutral-700','dark:text-neutral-300','bg-white','dark:bg-neutral-900');
+        btn.addEventListener('click', () => setUnitMode(btn.dataset.unit, btn.dataset.type));
+      });
+
+      // Lock button
+      elements.lockCoreBtn.addEventListener('click', () => {
+        setCoreLocked(!state.coreLocked);
+        calc();
+      });
+
+      // Reset core
+      $('resetCoreBtn').addEventListener('click', () => {
+        const coreIds = ['baseSalary','timeframeYears','coreShiftHours','daysPerYear','coreNightsOn','coreNightsOff'];
+        coreIds.forEach(id => { elements[id].value = DEFAULTS[id]; });
+        calc();
+      });
+
+      // Reset optional
+      $('resetOptionalBtn').addEventListener('click', () => {
+        const optIds = ['dayShiftCount','overnightShiftCount','dayShiftHours','dayShiftRate','overnightShiftHours','overnightShiftRate'];
+        optIds.forEach(id => { elements[id].value = DEFAULTS[id]; });
+        calc();
+      });
+
+      // Example
+      $('exampleBtn').addEventListener('click', () => {
+        setUnitMode('month', 'A');
+        setUnitMode('month', 'B');
+        elements.dayShiftCount.value = 2;
+        elements.overnightShiftCount.value = 1;
+        calc();
+      });
+
+      // Enable checkboxes
+      elements.enableTypeA.addEventListener('change', (e) => {
+        setShiftEnabled(e.target.checked, 'A');
+      });
+
+      elements.enableTypeB.addEventListener('change', (e) => {
+        setShiftEnabled(e.target.checked, 'B');
+      });
+
+      // Inputs recalc
+      const inputIds = [
+        'baseSalary','timeframeYears','coreShiftHours','daysPerYear','coreNightsOn','coreNightsOff',
+        'dayShiftCount','dayShiftHours','dayShiftRate','overnightShiftCount','overnightShiftHours','overnightShiftRate'
+      ];
+      inputIds.forEach(id => {
+        elements[id].addEventListener('input', calc);
+      });
+    }
+
+    // ---- Initialize ----
+    initElements();
+    initTheme();
+    initEventListeners();
+    hydrateFromState();
+    calc();
+  </script>
+</body>
+</html>
